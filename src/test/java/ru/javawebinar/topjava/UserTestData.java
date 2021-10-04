@@ -9,7 +9,15 @@ import java.util.Date;
 import static ru.javawebinar.topjava.model.AbstractBaseEntity.START_SEQ;
 
 public class UserTestData {
-    public static final MatcherFactory<User> MATCHER = MatcherFactory.usingIgnoringFieldsComparator(User.class, "registered", "meals");
+    public static final MatcherFactory.Matcher<User> MATCHER = MatcherFactory.usingIgnoringFieldsComparator(User.class, "registered", "meals");
+    public static MatcherFactory.Matcher<User> WITH_MEALS_MATCHER =
+            MatcherFactory.usingAssertions(User.class,
+//     No need use ignoringAllOverriddenEquals, see https://assertj.github.io/doc/#breaking-changes
+                    (a, e) -> assertThat(a).usingRecursiveComparison()
+                            .ignoringFields("registered", "meals.user").isEqualTo(e),
+                    (a, e) -> {
+                        throw new UnsupportedOperationException();
+                    });
 
     public static final int USER_ID = START_SEQ;
     public static final int ADMIN_ID = START_SEQ + 1;
