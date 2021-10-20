@@ -9,6 +9,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import ru.javawebinar.topjava.util.exception.ApplicationException;
 import ru.javawebinar.topjava.util.exception.ErrorType;
+import ru.javawebinar.topjava.util.validation.ValidationUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
