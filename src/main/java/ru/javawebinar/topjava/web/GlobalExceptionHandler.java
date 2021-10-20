@@ -6,8 +6,8 @@ import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.ModelAndView;
-import ru.javawebinar.topjava.AuthorizedUser;
-import ru.javawebinar.topjava.util.ValidationUtil;
+import org.springframework.web.servlet.NoHandlerFoundException;
+import ru.javawebinar.topjava.util.exception.ApplicationException;
 import ru.javawebinar.topjava.util.exception.ErrorType;
 
 import javax.servlet.http.HttpServletRequest;
@@ -36,9 +36,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ModelAndView defaultErrorHandler(HttpServletRequest req, Exception e) throws Exception {
         log.error("Exception at request " + req.getRequestURL(), e);
-        Throwable rootCause = ValidationUtil.logAndGetRootCause(log, req, e, true, ErrorType.APP_ERROR);
+        return logAndGetExceptionView(req, e, true, ErrorType.APP_ERROR, null);
+    }
 
-        HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+    private ModelAndView logAndGetExceptionView(HttpServletRequest req, Exception e, boolean logException, ErrorType errorType, String code) {
+        Throwable rootCause = ValidationUtil.logAndGetRootCause(log, req, e, logException, errorType);
+
         ModelAndView mav = new ModelAndView("exception",
                 Map.of("exception", rootCause, "message", ValidationUtil.getMessage(rootCause), "status", httpStatus));
         mav.setStatus(httpStatus);
