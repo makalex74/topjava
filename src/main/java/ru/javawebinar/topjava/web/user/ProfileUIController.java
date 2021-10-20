@@ -1,5 +1,6 @@
 package ru.javawebinar.topjava.web.user;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -8,7 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.support.SessionStatus;
 import ru.javawebinar.topjava.to.UserTo;
-import ru.javawebinar.topjava.web.SecurityUtil;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
 
@@ -17,7 +18,8 @@ import javax.validation.Valid;
 public class ProfileUIController extends AbstractUserController {
 
     @GetMapping
-    public String profile() {
+    public String profile(ModelMap model, @AuthenticationPrincipal AuthorizedUser authUser) {
+        model.addAttribute("userTo", authUser.getUserTo());
         return "profile";
     }
 
@@ -26,8 +28,8 @@ public class ProfileUIController extends AbstractUserController {
         if (result.hasErrors()) {
             return "profile";
         }
-        super.update(userTo, SecurityUtil.authUserId());
-        SecurityUtil.get().setTo(userTo);
+        super.update(userTo, authUser.getId());
+        authUser.setTo(userTo);
         status.setComplete();
         return "redirect:/meals";
     }
